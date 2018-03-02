@@ -1,0 +1,52 @@
+{
+  "variables": {
+    "version":"2.2.2"
+  },
+  "builders":[{
+    "type": "docker",
+    "image": "alpine:3.5",
+    "export_path": "containers/tengine.tar",
+    "run_command": [
+      "-d",
+      "-i",
+      "-t",
+      "--name",
+      "tengine-{{timestamp}}",
+      "{{.Image}}",
+      "/bin/ash"
+    ]
+
+    }],
+    "provisioners":[
+      {
+        "destination": "/tmp/install.sh",
+        "source": "./scripts/install.sh",
+        "type": "file"
+      },
+      {
+        "type": "shell",
+        "inline":"apk add --no-cache bash"
+      },
+      {
+        "type": "shell",
+        "execute_command": "echo 'test' |/bin/bash -e '{{ .Path }}'",
+        "inline": [
+          "chmod +x /tmp/install.sh",
+          "/tmp/install.sh {{user `version`}}"
+        ]
+      },
+      {
+        "destination": "/tmp",
+        "source": "./files",
+        "type": "file"
+      },
+      {
+        "type": "shell",
+        "inline": [
+          "mv /tmp/files/nginx.conf /etc/nginx/nginx.conf",
+          "mv /tmp/files/nginx.default.conf /etc/nginx/conf.d/default.conf"
+        ]
+      }
+    ]
+
+}

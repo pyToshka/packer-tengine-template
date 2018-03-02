@@ -1,0 +1,8 @@
+version: '3'
+services:
+  tengine:
+        build: tengine
+        tty: true
+        privileged: true
+        ports:
+            - '9090:80'
